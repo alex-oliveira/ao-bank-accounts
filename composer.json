@@ -1,0 +1,25 @@
+{
+  "license": "MIT",
+  "type": "package",
+  "name": "alex-oliveira/ao-bank-accounts",
+  "homepage": "https://github.com/alex-oliveira/ao-bank-accounts",
+  "description": "Resources for Bank Accounts with Laravel.",
+  "keywords": ["alex-oliveira", "laravel", "bank accounts"],
+  "authors": [
+    {
+      "name": "Alex Oliveira",
+      "homepage": "https://github.com/alex-oliveira",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "AoBankAccounts\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=5.5.9",
+    "laravel/framework": "5.*",
+    "alex-oliveira/ao-scrud": "dev-master"
+  }
+}
