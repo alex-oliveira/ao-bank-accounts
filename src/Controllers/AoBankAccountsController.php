@@ -3,7 +3,7 @@
 namespace AoBankAccounts\Controllers;
 
 use AoBankAccounts\Services\BankAccountService;
-use AoScrud\Controllers\ScrudController;
+use AoScrud\Core\ScrudController;
 
 class AoBankAccountsController extends ScrudController
 {

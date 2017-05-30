@@ -1,30 +1,39 @@
 <?php
 
-namespace AoBankAccounts\Models;
+namespace AoBankAccounts\Utils;
 
-use Illuminate\Database\Eloquent\Model;
+use AoBankAccounts\Utils\Tools\Router;
+use AoBankAccounts\Utils\Tools\Schema;
 
-class Bank extends Model
+class Tools
 {
-
     //------------------------------------------------------------------------------------------------------------------
-    // ATTRIBUTES
-    //------------------------------------------------------------------------------------------------------------------
-
-    protected $table = 'ao_ba_banks';
-
-    protected $fillable = ['number', 'alias', 'name'];
-
-    //------------------------------------------------------------------------------------------------------------------
-    // METHODS
+    // SCHEMA
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * @return BankAccount[]|\Illuminate\Database\Eloquent\Relations\HasMany
+     * @return Schema
      */
-    public function bankAccounts()
+    public function schema()
     {
-        return $this->hasMany(BankAccount::class);
+        return Schema::build();
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // ROUTER
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * @return Router
+     */
+    public function router($controller = null)
+    {
+        $router = Router::build();
+
+        if (isset($controller))
+            $router->controller($controller);
+
+        return $router;
     }
 
 }

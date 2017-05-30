@@ -2,8 +2,8 @@
 
 namespace AoBankAccounts\Services;
 
-use AoBankAccounts\Models\Account;
-use AoScrud\Services\ScrudService;
+use AoBankAccounts\Models\BankAccount;
+use AoScrud\Core\ScrudService;
 
 class BankAccountService extends ScrudService
 {
@@ -20,7 +20,7 @@ class BankAccountService extends ScrudService
 
     public function setDynamicClass($dynamicClass)
     {
-        $parts = explode('.', app()->make($dynamicClass)->accounts()->getQualifiedForeignKeyName());
+        $parts = explode('.', app()->make($dynamicClass)->bankAccounts()->getQualifiedForeignKeyName());
 
         $this->dynamicClass = $dynamicClass;
         $this->dynamicTable = $parts[0];
@@ -34,6 +34,7 @@ class BankAccountService extends ScrudService
         $model = $config->model();
         $model->dynamicClass = $this->dynamicClass;
         $model->dynamicTable = $this->dynamicTable;
+        $model->dynamicForeign = $this->dynamicForeign;
 
         $id = $config->data()->get($this->dynamicForeign);
 
@@ -69,7 +70,7 @@ class BankAccountService extends ScrudService
         // SEARCH //----------------------------------------------------------------------------------------------------
 
         $this->search
-            ->model(Account::class)
+            ->model(BankAccount::class)
             ->columns(['id', 'agency_number', 'account_number', 'operation_code'])
             ->otherColumns(['holder', 'bank_id', 'created_at', 'updated_at'])
             ->setAllOrders()
@@ -80,13 +81,13 @@ class BankAccountService extends ScrudService
                 ]
             ])
             ->rules([
-                'default' => '=',
+                'id' => '=',
                 'bank_id' => '=',
                 [
-                    ['holder' => '%like%|get:search'],
-                    ['agency_number' => '%like%|get:search'],
-                    ['operation_code' => '%like%|get:search'],
-                    ['account_number' => '%like%|get:search'],
+                    'holder' => '%like%|get:search',
+                    'agency_number' => '%like%|get:search',
+                    'operation_code' => '%like%|get:search',
+                    'account_number' => '%like%|get:search',
                 ]
             ])
             ->onPrepare(function ($config) {
@@ -96,7 +97,7 @@ class BankAccountService extends ScrudService
         // READ //------------------------------------------------------------------------------------------------------
 
         $this->read
-            ->model(Account::class)
+            ->model(BankAccount::class)
             ->columns($this->search->columns()->all())
             ->with($this->search->with()->all())
             ->otherColumns($this->search->otherColumns()->all())
@@ -107,25 +108,25 @@ class BankAccountService extends ScrudService
         // CREATE //----------------------------------------------------------------------------------------------------
 
         $this->create
-            ->model(Account::class)
+            ->model(BankAccount::class)
             ->columns(['bank_id', 'holder', 'agency_number', 'operation_code', 'account_number'])
             ->rules([
                 'holder' => 'required|max:255',
                 'agency_number' => 'required|max:20',
                 'operation_code' => 'required|int',
                 'account_number' => 'required|max:20',
-                'bank_id' => 'required|integer|exists:sba_banks,id'
+                'bank_id' => 'required|integer|exists:ao_ba_banks,id'
             ])->onPrepare(function ($config) {
                 $this->setOwner($config);
             })
             ->onExecuteEnd(function ($config, $result) {
-                $this->owner->accounts()->attach($result->id);
+                $this->owner->bankAccounts()->attach($result->id);
             });
 
         // UPDATE //----------------------------------------------------------------------------------------------------
 
         $this->update
-            ->model(Account::class)
+            ->model(BankAccount::class)
             ->columns($this->create->columns()->all())
             ->rules($this->create->rules())
             ->onPrepare(function ($config) {
@@ -135,20 +136,19 @@ class BankAccountService extends ScrudService
         // DESTROY //---------------------------------------------------------------------------------------------------
 
         $this->destroy
-            ->model(Account::class)
-            ->title('conta')
+            ->model(BankAccount::class)
             ->onPrepare(function ($config) {
                 $this->applyDynamicFilter($config);
 
             })->onExecute(function ($config) {
-                $owner = app()->make($this->dynamicClass)->find($config->data()->get($this->dynamicForeign));
-                $owner->accounts()->detach($config->data()->get('id'));
+                //$this->setOwner($config);
+                //$this->owner->bankAccounts()->detach($config->data()->get('id'));
             });
 
         // RESTORE //---------------------------------------------------------------------------------------------------
 
         $this->restore
-            ->model(Account::class)
+            ->model(BankAccount::class)
             ->onPrepare(function ($config) {
                 $this->applyDynamicFilter($config);
             });
