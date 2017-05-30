@@ -52,7 +52,7 @@ public function up()
         $table->bigInteger('bank_account_id')->unsigned();
         $table->foreign('bank_account_id', 'fk_ao_ba_bank_accounts_x_users')->references('id')->on('ao_ba_bank_accounts');
         
-        $table->primary(['user_id', 'comment_id'], 'pk_ao_ba_bank_accounts_x_users');
+        $table->primary(['user_id', 'bank_account_id'], 'pk_ao_ba_bank_accounts_x_users');
     });
 }
 ````
